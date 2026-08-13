@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prático System — Soluções que simplificam. Resultados que impulsionam.</title>
+  <meta name="description" content="Sistemas inteligentes para comércio, supermercado, oficina, transportadora e dezenas de segmentos. Venda mais, gaste menos e tome decisões melhores.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            ink: { DEFAULT: '#0b0f1a', soft: '#334155', muted: '#64748b' },
+            accent: { DEFAULT: '#6366f1', soft: '#818cf8', light: '#eef2ff', mid: '#c7d2fe' },
+            surface: { DEFAULT: '#f8fafc', card: '#ffffff' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background: #f8fafc; }
+    .hero-dark {
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(99, 102, 241, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        #0b0f1a;
+    }
+    .grid-lines {
+      background-image:
+        linear-gradient(rgba(99, 102, 241, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
+    .card-hover:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 32px -12px rgba(15, 23, 42, 0.12);
+      border-color: #c7d2fe;
+    }
+    .btn-main {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn-main:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px -8px rgba(99, 102, 241, 0.5);
+    }
+    #hero-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .hero-visual {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      height: 420px;
+      margin-left: auto;
+    }
+    @media (max-width: 639px) {
+      .hero-visual { height: 200px; max-width: 100%; margin-left: 0; }
+    }
+    @media (min-width: 640px) and (max-width: 767px) {
+      .hero-visual { height: 280px; }
+    }
+    .faq-item { border-bottom: 1px solid #e2e8f0; }
+    .faq-btn {
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.25rem 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #0f172a;
+      transition: color 0.2s;
+    }
+    .faq-btn:hover { color: #6366f1; }
+    .faq-icon {
+      flex-shrink: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      color: #6366f1;
+      transition: transform 0.25s ease;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      color: #64748b;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .faq-item.open .faq-answer {
+      max-height: 220px;
+      padding-bottom: 1.25rem;
+    }
+    .contact-input {
+      width: 100%;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      color: #f1f5f9;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .contact-input::placeholder { color: #64748b; }
+    .contact-input:focus { outline: none; border-color: #6366f1; }
+    .contact-label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 0.4rem;
+    }
+  </style>
+</head>
+<body class="font-sans text-ink antialiased">
+
+  <!-- Nav -->
+  <nav class="fixed top-0 inset-x-0 z-50 bg-[#0b0f1a]/85 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-5 sm:px-6 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+          <span class="text-white font-bold text-sm">P</span>
+        </div>
+        <span class="font-semibold text-white tracking-tight">Prático <span class="text-indigo-300">System</span></span>
+      </a>
+      <div class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+        <a href="#segmentos" class="hover:text-white transition-colors">Segmentos</a>
+        <a href="#beneficios" class="hover:text-white transition-colors">Benefícios</a>
+        <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+        <a href="#contato" class="hover:text-white transition-colors">Contato</a>
+      </div>
+      <a href="https://wa.me/556793100780?text=Olá! Gostaria de saber mais sobre o Prático System." target="_blank" rel="noopener"
+         class="btn-main inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 text-white text-sm font-medium hover:from-indigo-400 hover:to-violet-500">
+        Falar com especialista
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero dark (Arctron-inspired) -->
+  <section class="hero-dark grid-lines pt-24 pb-12 md:pt-32 md:pb-20 relative overflow-hidden">
+    <div class="max-w-6xl mx-auto px-5 sm:px-6 relative">
+      <div class="grid grid-cols-2 gap-4 sm:gap-8 md:gap-12 items-center">
+        <div class="relative z-10 min-w-0">
+          <p class="text-[8px] sm:text-xs font-medium tracking-[0.08em] sm:tracking-[0.2em] uppercase text-indigo-300 mb-2 sm:mb-6 reveal whitespace-nowrap">
+            ERP · Gestão · Do MEI às grandes operações
+          </p>
+          <h1 class="text-[1.35rem] xs:text-2xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.15] text-white reveal">
+            Soluções que <span class="text-indigo-400">simplificam</span>.<br>
+            Resultados que <span class="text-indigo-400">impulsionam</span>.
+          </h1>
+          <p class="mt-3 sm:mt-6 text-xs sm:text-base md:text-lg text-slate-400 max-w-lg leading-relaxed reveal">
+            A Prático System oferece sistemas inteligentes que ajudam sua empresa a vender mais, gastar menos e tomar decisões melhores — com plano sob medida para o seu segmento.
+          </p>
+          <div class="mt-4 sm:mt-10 flex flex-col sm:flex-row gap-2 sm:gap-3 reveal">
+            <a href="https://wa.me/556793100780?text=Olá! Gostaria de uma demonstração do Prático System." target="_blank" rel="noopener"
+               class="btn-main inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:px-6 sm:py-3.5 rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 text-white text-xs sm:text-base font-medium">
+              Começar agora
+              <span aria-hidden="true">→</span>
+            </a>
+            <a href="#segmentos"
+               class="inline-flex items-center justify-center px-3 py-2 sm:px-6 sm:py-3.5 rounded-full bg-white/5 text-white text-xs sm:text-base font-medium border border-white/15 hover:bg-white/10 transition">
+              Ver segmentos
+            </a>
+          </div>
+          <div class="mt-4 sm:mt-12 flex flex-wrap gap-x-3 sm:gap-x-8 gap-y-1.5 sm:gap-y-3 text-[10px] sm:text-sm text-slate-500 reveal">
+            <span class="flex items-center gap-1.5"><span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-indigo-400"></span> NFC-e / NF-e</span>
+            <span class="flex items-center gap-1.5"><span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-indigo-400"></span> 16+ segmentos</span>
+            <span class="hidden sm:flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> Suporte WhatsApp + IA</span>
+          </div>
+        </div>
+        <div class="hero-visual reveal">
+          <canvas id="hero-canvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Segmentos (sem links) -->
+  <section id="segmentos" class="py-12 md:py-20 bg-white border-t border-slate-100">
+    <div class="max-w-6xl mx-auto px-5 sm:px-6">
+      <div class="max-w-2xl mb-8 reveal">
+        <p class="text-xs font-medium tracking-[0.2em] uppercase text-accent mb-3">Segmentos</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-ink">O sistema certo para o seu negócio</h2>
+        <p class="mt-4 text-ink-soft text-lg">Plano sob medida para cada perfil — do MEI à operação multiunidade.</p>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Comércio em geral</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Loja, atacado e varejo</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Supermercado</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">PDV, balança, NFC-e</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Centro Automotivo</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">OS, peças, Kanban</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Transportadora</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Frota, CT-e, fretes</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Restaurante</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Mesas, comandas, delivery</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Salão de Beleza</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Agenda e comissões</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Clínica</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Agenda e pacientes</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Distribuidora</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Rota, vendas, estoque</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Revenda de Veículos</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Estoque e propostas</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Imobiliária</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Imóveis e contratos</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Contabilidade</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Gestão para escritórios</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Lavanderia</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Pedidos e clientes</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Eventos</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Orçamento e agenda</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Proteção Veicular</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Associados e sinistros</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">ONG / Associação</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Doações e projetos</p>
+        </div>
+        <div class="card-hover block p-3.5 sm:p-5 rounded-xl border border-slate-150 bg-surface reveal">
+          <div class="font-semibold text-sm sm:text-base text-ink">Gestão de Contratos</div>
+          <p class="text-xs sm:text-sm text-ink-muted mt-1">Aditivos e renovações</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefícios -->
+  <section id="beneficios" class="py-12 md:py-20 bg-surface border-t border-slate-100">
+    <div class="max-w-6xl mx-auto px-5 sm:px-6">
+      <div class="max-w-2xl mb-8 reveal">
+        <p class="text-xs font-medium tracking-[0.2em] uppercase text-accent mb-3">Por que a Prático System</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-ink">Tecnologia a serviço do resultado</h2>
+        <p class="mt-4 text-ink-soft text-lg">Menos complexidade operacional. Mais clareza para decidir e crescer.</p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 card-hover reveal">
+          <div class="w-10 h-10 rounded-lg bg-accent-light flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="font-semibold text-lg text-ink mb-2">Lucro visível no celular</h3>
+          <p class="text-ink-soft text-sm leading-relaxed">Saiba em segundos quanto a empresa lucrou hoje — sem planilha e sem esperar o fechamento do mês.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 card-hover reveal">
+          <div class="w-10 h-10 rounded-lg bg-accent-light flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          </div>
+          <h3 class="font-semibold text-lg text-ink mb-2">Estoque sob controle</h3>
+          <p class="text-ink-soft text-sm leading-relaxed">Alertas de ruptura e validade. Menos desperdício e menos capital parado na prateleira.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 card-hover reveal">
+          <div class="w-10 h-10 rounded-lg bg-accent-light flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <h3 class="font-semibold text-lg text-ink mb-2">Fiscal em dia</h3>
+          <p class="text-ink-soft text-sm leading-relaxed">NFC-e, NF-e e NFS-e integradas. Emissão no caixa, sem retrabalho e com menos risco.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 card-hover reveal">
+          <div class="w-10 h-10 rounded-lg bg-accent-light flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="font-semibold text-lg text-ink mb-2">Decisões mais rápidas</h3>
+          <p class="text-ink-soft text-sm leading-relaxed">Dashboard e alertas inteligentes para agir antes do problema virar prejuízo.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 card-hover reveal">
+          <div class="w-10 h-10 rounded-lg bg-accent-light flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          </div>
+          <h3 class="font-semibold text-lg text-ink mb-2">Acesso de qualquer lugar</h3>
+          <p class="text-ink-soft text-sm leading-relaxed">App e painel web. Na loja, em casa ou em viagem — o negócio continua sob controle.</p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 card-hover reveal">
+          <div class="w-10 h-10 rounded-lg bg-accent-light flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          </div>
+          <h3 class="font-semibold text-lg text-ink mb-2">Suporte que resolve</h3>
+          <p class="text-ink-soft text-sm leading-relaxed">Atendimento humano no WhatsApp, tutoriais passo a passo e IA para dúvidas na hora.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Como funciona -->
+  <section class="py-12 md:py-20 bg-white border-t border-slate-100">
+    <div class="max-w-6xl mx-auto px-5 sm:px-6">
+      <div class="max-w-2xl mb-8 reveal">
+        <p class="text-xs font-medium tracking-[0.2em] uppercase text-accent mb-3">Jornada</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-ink">Como começa a funcionar</h2>
+        <p class="mt-4 text-ink-soft text-lg">Quatro passos, do primeiro contato à operação rodando.</p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="reveal">
+          <div class="text-sm font-medium text-accent mb-3">01</div>
+          <h3 class="font-semibold text-ink text-lg mb-2">Conversa</h3>
+          <p class="text-ink-soft text-sm leading-relaxed">Entendemos porte, segmento e as dores reais do seu negócio.</p>
+        </div>
+        <div class="reveal">
+          <div class="text-sm font-medium text-accent mb-3">02</div>
+          <h3 class="font-semibold text-ink text-lg mb-2">Demonstração</h3>
+          <p class="text-ink-soft text-sm leading-relaxed">Mostramos a solução do seu segmento, com dados próximos da realidade.</p>
+        </div>
+        <div class="reveal">
+          <div class="text-sm font-medium text-accent mb-3">03</div>
+          <h3 class="font-semibold text-ink text-lg mb-2">Implantação</h3>
+          <p class="text-ink-soft text-sm leading-relaxed">Configuração, treinamento e migração padrão a partir de R$ 1.200.</p>
+        </div>
+        <div class="reveal">
+          <div class="text-sm font-medium text-accent mb-3">04</div>
+          <h3 class="font-semibold text-ink text-lg mb-2">Operação</h3>
+          <p class="text-ink-soft text-sm leading-relaxed">Você passa a operar com controle. Suporte contínuo por WhatsApp e IA.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-12 md:py-20 bg-surface border-t border-slate-100">
+    <div class="max-w-3xl mx-auto px-5 sm:px-6">
+      <div class="mb-8 reveal">
+        <p class="text-xs font-medium tracking-[0.2em] uppercase text-accent mb-3 flex items-center gap-2">
+          <span class="w-6 h-px bg-accent"></span>
+          Perguntas frequentes
+        </p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-ink">Tudo o que você precisa saber.</h2>
+      </div>
+      <div class="reveal">
+        <div class="faq-item">
+          <button class="faq-btn" type="button" aria-expanded="false">
+            <span>O que a Prático System faz?</span>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </button>
+          <div class="faq-answer">Oferecemos sistemas de gestão (ERP) sob medida para dezenas de segmentos — comércio, supermercado, oficina, transportadora, restaurante, clínica e mais. O foco é aumentar o lucro, reduzir desperdício e dar clareza para o dono decidir com segurança.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" type="button" aria-expanded="false">
+            <span>Para quem é o sistema?</span>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </button>
+          <div class="faq-answer">Do MEI e microempresas até operações maiores. Atendemos comércio, indústria, serviços, food, saúde, transporte, contabilidade e vários outros segmentos. Montamos o plano de acordo com o perfil de cada cliente.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" type="button" aria-expanded="false">
+            <span>Como funciona a implantação?</span>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </button>
+          <div class="faq-answer">A implantação padrão começa a partir de R$ 1.200 e inclui configuração, parametrização dos módulos, treinamento da equipe e migração padrão de dados. Projetos maiores ou com escopo especial são cotados sob medida.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" type="button" aria-expanded="false">
+            <span>O sistema emite nota fiscal?</span>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </button>
+          <div class="faq-answer">Sim. Emissão de NFC-e, NF-e e NFS-e integrada ao PDV e à operação. O fiscal fica em dia sem retrabalho manual.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" type="button" aria-expanded="false">
+            <span>Preciso de computador especial ou servidor local?</span>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </button>
+          <div class="faq-answer">Na maioria dos casos, basta um computador com internet. O sistema roda em nuvem. Em alguns cenários há opção de operação offline no caixa, sincronizando depois.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" type="button" aria-expanded="false">
+            <span>Como é o suporte?</span>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </button>
+          <div class="faq-answer">Suporte humano via WhatsApp, dezenas de tutoriais passo a passo e IA de suporte para dúvidas rápidas. Você não fica sozinho depois da implantação.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" type="button" aria-expanded="false">
+            <span>Posso testar antes de contratar?</span>
+            <svg class="faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </button>
+          <div class="faq-answer">Sim. Fazemos demonstração gratuita do segmento que faz sentido para o seu negócio. Basta chamar no WhatsApp ou preencher o formulário de contato.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contato -->
+  <section id="contato" class="py-12 md:py-20 bg-[#0b0f1a] text-white">
+    <div class="max-w-6xl mx-auto px-5 sm:px-6">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+        <div class="reveal">
+          <p class="text-xs font-medium tracking-[0.2em] uppercase text-indigo-300 mb-4 flex items-center gap-2">
+            <span class="w-6 h-px bg-indigo-400"></span>
+            Vamos conversar
+          </p>
+          <h2 class="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
+            Tem um desafio de gestão?<br>Comece por aqui.
+          </h2>
+          <p class="mt-5 text-slate-400 text-lg leading-relaxed max-w-md">
+            Conta o que você precisa. A gente responde no mesmo dia útil, normalmente já com um caminho desenhado.
+          </p>
+          <p class="mt-6 text-slate-400 text-sm leading-relaxed max-w-md">
+            Do outro lado tem gente que entende de operação, não só de venda. Quem lê a sua mensagem já vai pensando na solução.
+          </p>
+          <div class="mt-10 space-y-4">
+            <a href="https://wa.me/556793100780" target="_blank" rel="noopener" class="flex items-center gap-3 group">
+              <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center group-hover:bg-indigo-600 transition-colors">
+                <svg class="w-5 h-5 text-indigo-400 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.633-.807-1.888-.9-.255-.093-.44-.139-.626.14-.185.279-.718.9-.88 1.085-.163.185-.325.209-.6.07-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.626-1.507-.857-2.065-.225-.54-.453-.466-.626-.475-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.633-.667 1.864-1.312.23-.645.23-1.197.161-1.312-.069-.114-.254-.185-.53-.324z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.555 4.122 1.527 5.86L.057 23.14a.5.5 0 00.605.605l5.28-1.47A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.89 0-3.65-.52-5.17-1.42l-.37-.22-3.88 1.08 1.1-3.79-.24-.39A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+              </div>
+              <div>
+                <div class="text-xs text-slate-500 uppercase tracking-wider">WhatsApp</div>
+                <div class="text-slate-200 font-medium group-hover:text-white">(67) 9310-0780</div>
+              </div>
+            </a>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center">
+                <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              </div>
+              <div>
+                <div class="text-xs text-slate-500 uppercase tracking-wider">Onde estamos</div>
+                <div class="text-slate-200 font-medium">Campo Grande · MS</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-12 pt-8 border-t border-slate-800">
+            <p class="text-xs font-medium tracking-[0.15em] uppercase text-slate-500 mb-4">O que acontece depois</p>
+            <ol class="space-y-3 text-sm text-slate-400">
+              <li class="flex gap-3"><span class="text-indigo-400 font-medium">1.</span> A gente lê e responde no mesmo dia útil.</li>
+              <li class="flex gap-3"><span class="text-indigo-400 font-medium">2.</span> Marcamos uma conversa rápida pra entender o escopo.</li>
+              <li class="flex gap-3"><span class="text-indigo-400 font-medium">3.</span> Você recebe um caminho e uma estimativa, sem compromisso.</li>
+            </ol>
+          </div>
+        </div>
+        <div class="reveal">
+          <form class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-5" onsubmit="event.preventDefault(); window.open('https://wa.me/556793100780?text=' + encodeURIComponent('Olá! Meu nome é ' + (document.getElementById('nome').value || '') + '. Gostaria de uma demonstração do Prático System.'), '_blank');">
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="contact-label" for="nome">Nome</label>
+                <input id="nome" type="text" class="contact-input" placeholder="Seu nome" required>
+              </div>
+              <div>
+                <label class="contact-label" for="email">E-mail</label>
+                <input id="email" type="email" class="contact-input" placeholder="seu@email.com">
+              </div>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="contact-label" for="empresa">Empresa</label>
+                <input id="empresa" type="text" class="contact-input" placeholder="Nome da empresa">
+              </div>
+              <div>
+                <label class="contact-label" for="cidade">Cidade</label>
+                <input id="cidade" type="text" class="contact-input" placeholder="Onde você está?">
+              </div>
+            </div>
+            <div>
+              <label class="contact-label" for="segmento">Segmento</label>
+              <select id="segmento" class="contact-input">
+                <option value="">Selecione uma opção</option>
+                <option>Comércio / Varejo</option>
+                <option>Supermercado / Mercado</option>
+                <option>Centro Automotivo / Oficina</option>
+                <option>Transportadora</option>
+                <option>Restaurante / Food</option>
+                <option>Clínica / Saúde</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <div>
+              <label class="contact-label" for="mensagem">Como podemos ajudar?</label>
+              <textarea id="mensagem" rows="4" class="contact-input resize-none" placeholder="Conta um pouco sobre o que você precisa..."></textarea>
+            </div>
+            <button type="submit" class="btn-main w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-medium">
+              Enviar mensagem
+              <span aria-hidden="true">→</span>
+            </button>
+            <p class="text-xs text-slate-500">
+              Respondemos rápido (normalmente em 1 dia útil). Ou chame direto no
+              <a href="https://wa.me/556793100780" target="_blank" rel="noopener" class="text-indigo-400 hover:underline">WhatsApp (67) 9310-0780</a>.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 bg-[#0b0f1a] py-10">
+    <div class="max-w-6xl mx-auto px-5 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+          <span class="text-white font-bold text-xs">P</span>
+        </div>
+        <span class="font-semibold text-white text-sm">Prático System</span>
+      </div>
+      <p class="text-slate-500 text-sm text-center">Soluções que simplificam. Resultados que impulsionam.</p>
+      <p class="text-slate-600 text-xs">© 2026 Prático System</p>
+    </div>
+  </footer>
+
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), (i % 4) * 50);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    document.querySelectorAll('.faq-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.faq-item');
+        const wasOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.faq-btn').setAttribute('aria-expanded', 'false');
+        });
+        if (!wasOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    (function () {
+      const canvas = document.getElementById('hero-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h, particles, animId, mouse = { x: null, y: null };
+      const isMobile = window.innerWidth < 640;
+      const PARTICLE_COUNT = isMobile ? 40 : 70;
+      const CONNECT_DIST = isMobile ? 80 : 110;
+      const COLOR = { r: 129, g: 140, b: 248 }; // indigo-400
+
+      function resize() {
+        const parent = canvas.parentElement;
+        w = parent.clientWidth;
+        h = parent.clientHeight;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function createParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.45,
+            vy: (Math.random() - 0.5) * 0.45,
+            r: Math.random() * 2 + 1.2,
+            pulse: Math.random() * Math.PI * 2
+          });
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        const grd = ctx.createRadialGradient(w * 0.55, h * 0.45, 0, w * 0.55, h * 0.45, w * 0.55);
+        grd.addColorStop(0, 'rgba(129, 140, 248, 0.12)');
+        grd.addColorStop(1, 'rgba(129, 140, 248, 0)');
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, w, h);
+
+        for (let i = 0; i < particles.length; i++) {
+          const a = particles[i];
+          for (let j = i + 1; j < particles.length; j++) {
+            const b = particles[j];
+            const dx = a.x - b.x, dy = a.y - b.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < CONNECT_DIST) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(${COLOR.r},${COLOR.g},${COLOR.b},${(1 - dist / CONNECT_DIST) * 0.4})`;
+              ctx.lineWidth = 1;
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        for (const p of particles) {
+          p.x += p.vx; p.y += p.vy; p.pulse += 0.02;
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+          const cx = w * 0.55, cy = h * 0.48;
+          p.vx += (cx - p.x) * 0.00008;
+          p.vy += (cy - p.y) * 0.00008;
+          if (mouse.x != null) {
+            const mdx = p.x - mouse.x, mdy = p.y - mouse.y;
+            const md = Math.sqrt(mdx * mdx + mdy * mdy);
+            if (md < 100) { p.vx += mdx * 0.0004; p.vy += mdy * 0.0004; }
+          }
+          const pulseR = p.r + Math.sin(p.pulse) * 0.4;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, pulseR, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${COLOR.r},${COLOR.g},${COLOR.b},0.85)`;
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, pulseR * 2.2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${COLOR.r},${COLOR.g},${COLOR.b},0.15)`;
+          ctx.fill();
+        }
+        animId = requestAnimationFrame(draw);
+      }
+
+      function init() {
+        resize();
+        createParticles();
+        if (animId) cancelAnimationFrame(animId);
+        draw();
+      }
+      window.addEventListener('resize', () => { resize(); createParticles(); });
+      canvas.parentElement.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+      });
+      canvas.parentElement.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+      init();
+    })();
+  </script>
+</body>
+</html>
